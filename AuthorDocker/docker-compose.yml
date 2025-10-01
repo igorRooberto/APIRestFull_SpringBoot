@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:17
+    container_name: meu-postgres-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=post
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # Serviço da sua Aplicação Spring Boot
+  app:
+    build: .
+    container_name: minha-app-spring
+    ports:
+      - "8080:8080"
+    environment:
+      # A URL de conexão agora aponta para o nome do serviço 'db'
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/post
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123456
+    depends_on:
+      - db
+
+# Declaração do volume nomeado para persistir os dados do banco
+volumes:
+  postgres-data: {}
